@@ -85,15 +85,61 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
 }
 
 void terminal_putchar(char c) {
-  terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
-  if (++terminal_column == VGA_WIDTH) {
-    terminal_column = 0;
-    if (++terminal_row == VGA_HEIGHT) {
-      terminal_row = 0;
-    }
-  }
+  
+	// check if we find a new line character
+	if( c == '\n'){
+	
+		// add a new row and reset the column back to zero
+		terminal_row++;
+		terminal_column = 0;
+
+	}
+        else
+	{								
+		// if no next line character is found then do this as normal I guess idk if it works
+		terminal_putentryat(c, terminal_color, terminal_column, terminal_row);	
+
+		// if no char is detected continue adding a char
+		terminal_column++;
+	}
+
+	
+	// if the terminal column characters exceeds screen width
+	// reset to 0
+	if (terminal_column == VGA_WIDTH) {
+		terminal_column = 0;
+	}
+
+	// if the terminal row exceeds screen height
+	// keep it at the bottom
+	// but scroll the other elements up
+	if (terminal_row == VGA_HEIGHT) {
+		terminal_row = 24;
+
+		// if the terminal rows eceed height then scroll ma boi
+		terminal_scroll();
+	}
+
 }
  
+// TERMINAL SCROLL METHOD I ADDED
+void terminal_scroll(){
+	// iterate through the height of the  VGA output
+	for(int i = 0; i < VGA_HEIGHT; i++){
+		// iterate through the  output width
+		for(int m = 0; m < VGA_WIDTH; m++){
+			// addjust the terminal view window
+			terminal_buffer[i * VGA_WIDTH + m] = terminal_buffer[(i + 1) * VGA_WIDTH + m];
+		}
+	}
+
+	// if characters exceed viewing range make them blank
+	for(int n = 1920; n <= 2000; n++){
+		terminal_buffer[n] = make_vgaentry(' ', terminal_color);
+	}
+}
+
+
 void terminal_writestring(const char* data) {
   size_t datalen = strlen(data);
   for (size_t i = 0; i < datalen; i++)
@@ -111,5 +157,51 @@ void kernel_main() {
    * yet, '\n' will produce some VGA specific character instead.
    * This is normal.
    */
-  terminal_writestring("Hello, kernel World!\n");
+
+	// single red
+	terminal_setcolor(COLOR_RED);
+	terminal_writestring("Hello, kernel World!\n");
+
+	// 6 white
+	terminal_setcolor(COLOR_WHITE);
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+
+	// 18 blue
+	terminal_setcolor(COLOR_BLUE);
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+
+	// 5 green
+	terminal_setcolor(COLOR_GREEN);
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+	terminal_writestring("Hello, kernel World!\n");
+
+
+
+
+
 }
